@@ -19,7 +19,7 @@ export default function Navbar() {
           <Link to="/">
             <Button variant="ghost">Home</Button>
           </Link>
-          <Link to="/map">
+          <Link to="/orgmap">
             <Button variant="ghost">Map</Button>
           </Link>
           <Link to="/orgprofile">

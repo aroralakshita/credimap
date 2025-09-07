@@ -62,7 +62,7 @@ function App() {
       }} />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/" element={<OrgMap />} />
+        <Route path="/orgmap" element={<OrgMap />} />
         <Route path="/register" element={<Register />} />
         <Route path="/protectedroute" element={<ProtectedRoute />} />
         <Route path="/login" element={<Login onLogin={handleLogin} />} />

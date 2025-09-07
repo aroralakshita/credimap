@@ -3,24 +3,29 @@ import { Box, Flex, Heading, FormControl, FormLabel, Input, Button, VStack, Text
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-function Login() {
+function Login({ onLogin }) {
   const toast = useToast();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: "", password: "" });
 
-  const handleChange = e => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  const handleChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/auth/login", formData);
-      toast({ title: "Logged in successfully!", status: "success", duration: 3000, isClosable: true });
-      navigate("/dashboard"); // Redirect after login
+      const res = await axios.post('http://localhost:5000/api/auth/login', formData);
+
+      // Save token and user info
+      localStorage.setItem('token', res.data.token);
+      onLogin(res.data.user);
+
+      // Redirect to dashboard
+      navigate('/dashboard');
     } catch (err) {
-      toast({ title: "Login failed", description: err.response?.data?.message || "Try again", status: "error", duration: 4000, isClosable: true });
+      console.error(err);
+      alert('Login failed. Please check your credentials.');
     }
   };
 

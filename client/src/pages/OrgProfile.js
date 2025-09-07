@@ -1,17 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaInstagram, FaLinkedin, FaLink, FaTiktok } from "react-icons/fa";
 import axios from 'axios';
+import {
+  Box, Flex, Heading, Text, VStack, HStack, Avatar, Stat, StatLabel, StatNumber, StatHelpText, IconButton, Spinner
+} from '@chakra-ui/react';
+import { FaInstagram, FaLinkedin, FaLink, FaTiktok } from 'react-icons/fa';
 
-function OrgProfile() {
-  const { id } = useParams();
+export default function OrgProfile() {
+  const { orgId } = useParams(); // 👈 get orgId from route like /orgprofile/:orgId
   const [org, setOrg] = useState(null);
   const [reviews, setReviews] = useState([]);
-  const [average, setAverage] = useState(0);
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [refresh, setRefresh] = useState(false); // to trigger re-fetch
+  const [average, setAverage] = useState(0);
+  const { id } = useParams();
   const navigate = useNavigate();
+
+
+  // Calculate average rating
+  const avgRating = reviews.length > 0
+    ? (reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length).toFixed(1)
+    : 0;
 
   useEffect(() => {
     const fetchOrgAndReviews = async () => {
@@ -58,19 +71,23 @@ function OrgProfile() {
   if (!org) return <div className="text-center p-10">Loading organization...</div>;
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <button
-        className="mb-4 text-blue-600 underline"
-        onClick={() => navigate(-1)}
-      >
-        ← Back
-      </button>
+    <Box
+      minH="100vh"
+      bgGradient="linear(to-br, rgb(232,185,171), rgb(214,239,255), rgb(244,226,133))"
+      p={8}
+      fontFamily="Ubuntu, sans-serif"
+    >
 
-      <div className="bg-white shadow rounded p-6">
-        <h1 className="text-2xl font-bold">{org.name}</h1>
-        <p className="text-gray-600 italic">{org.location?.city}, {org.location?.country || 'Location unknown'}</p>
-      
-      <div className="flex space-x-4 mt-3">
+      {/* Header */}
+      <Flex justify="space-between" align="center" mb={6}>
+        <HStack spacing={3}>
+          <Heading textAlign="left" color="gray.800">
+            {org.name}
+            <p className="text-gray-100 italic text-2xl">{org.location?.city}, {org.location?.country || 'Location unknown'}</p>
+          </Heading>
+
+          {/* Social Media beside name */}
+          <div className="flex space-x-4 mb-6">
   {org.instagram && (
     <a
       href={org.instagram}
@@ -112,72 +129,113 @@ function OrgProfile() {
     </a>
   )}
 </div>
+        </HStack>
+      </Flex>
 
-      
-      <div className="mt-2 flex flex-wrap gap-2">
-        {org.category && (
-         <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
-        {org.category}
-         </span>
-      )}
-        {org.format && (
-         <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-        {org.format}
-         </span>
-      )}
-      </div>
+      {/* Stats Row */}
+      <Flex gap={6} mb={10} wrap="wrap">
+        {[
+          { label: "Avg Rating", value: `${avgRating} ⭐`, help: `Based on ${reviews.length} reviews` },
+          { label: "Description", help: org.location?.description },
+          { label: "Category", value: org.category || "N/A", help: org.format || "" },
+        ].map((stat, i) => (
+          <Box
+            key={i}
+            flex="1"
+            minW="200px"
+            bg="white"
+            p={6}
+            rounded="2xl"
+            shadow="md"
+            _hover={{ shadow: "lg" }}
+          >
+            <Stat>
+              <StatLabel>{stat.label}</StatLabel>
+              <StatNumber>{stat.value}</StatNumber>
+              {stat.help && <StatHelpText>{stat.help}</StatHelpText>}
+            </Stat>
+          </Box>
+        ))}
+      </Flex>
 
-      <div className="mt-4">
-        <p className="text-xl">⭐ {average} / 5</p>
-      {reviews.length === 0 && (
-        <p className="text-gray-500">No reviews yet. Be the first!</p>
-      )}
+      {/* Info + Reviews + Listings */}
+      <Flex gap={8} align="start" wrap="wrap">
 
-        {org.logoUrl && (
-          <img src={org.logoUrl} alt={`${org.name} logo`} className="w-40 h-40 mt-4 rounded object-cover" />
-        )}
+        {/* Reviews */}
+        <Box
+          flex="2"
+          minW="200px"
+          bg="white"
+          p={6}
+          rounded="2xl"
+          shadow="md"
+          _hover={{ shadow: "lg" }}
+        >
+          <Heading size="md" mb={4}>
+            Reviews
+          </Heading>
+          {reviews.length === 0 ? (
+            <Text>No reviews yet.</Text>
+          ) : (
+            <VStack align="stretch" spacing={4}>
+              {reviews.map(r => (
+                <Box
+                  key={r._id}
+                  p={4}
+                  bg="gray.50"
+                  rounded="lg"
+                  shadow="sm"
+                  _hover={{ bg: "gray.100" }}
+                >
+                  <HStack spacing={3} mb={2}>
+                    <Avatar size="sm" name={r.reviewer?.name || "User"} />
+                    <Text fontWeight="bold">{r.reviewer?.name || "Anonymous"}</Text>
+                    <Text color="yellow.500">{r.rating}⭐</Text>
+                  </HStack>
+                  <Text fontSize="sm" color="gray.700">
+                    {r.comment}
+                  </Text>
+                </Box>
+              ))}
+            </VStack>
+          )}
+        </Box>
 
-        <p className="mt-4 text-gray-800">{org.location?.description || "No description available."}</p>
-        
-        {/* Placeholder for reviews */}
-        <hr className="my-6" />
-        <h2 className="text-xl font-semibold">Reviews</h2>
-        <ul className="mt-6 space-y-2">
-          {reviews.map(r => (
-            <li key={r._id} className="bg-white p-4 rounded shadow">
-              <p className="font-semibold">{r.reviewer.name} — {r.rating}★</p>
-              <p>{r.comment}</p>
-            </li>
-          ))}
-        </ul>
-        <form onSubmit={handleSubmit} className="mt-4 bg-white p-4 rounded shadow">
-          <div className="mb-2">
-            <label className="block font-semibold mb-1">Your Rating</label>
-            {[1, 2, 3, 4, 5].map(star => (
-              <button
-                key={star}
-                type="button"
-                onClick={() => setRating(star)}
-                className={`text-2xl ${star <= rating ? 'text-yellow-500' : 'text-gray-300'}`}
-              >★</button>
-            ))}
-          </div>
-
-          <textarea
-            className="w-full border rounded p-2 mb-2"
-            placeholder="Write a comment (optional)"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-          />
-
-          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
-            Submit Review
-          </button>
-        </form>
-        </div>
-      </div>
-    </div>
+        {/* Listings */}
+        <Box
+          flex="1"
+          minW="525px"
+          bg="white"
+          p={6}
+          rounded="2xl"
+          shadow="md"
+          _hover={{ shadow: "lg" }}
+        >
+          <Heading size="md" mb={4}>
+            Listings
+          </Heading>
+          {listings.length === 0 ? (
+            <Text>No listings available.</Text>
+          ) : (
+            <VStack align="stretch" spacing={4}>
+              {listings.map(l => (
+                <Box
+                  key={l._id}
+                  p={4}
+                  bg="gray.50"
+                  rounded="lg"
+                  shadow="sm"
+                  _hover={{ bg: "gray.100" }}
+                >
+                  <Text fontWeight="bold">{l.title}</Text>
+                  <Text fontSize="sm" color="gray.700">{l.description}</Text>
+                  <Text fontSize="xs" color="gray.500">{l.type} • {l.date}</Text>
+                </Box>
+              ))}
+            </VStack>
+          )}
+        </Box>
+      </Flex>
+    </Box>
   );
-};
-
-export default OrgProfile;
+}
