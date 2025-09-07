@@ -6,7 +6,7 @@ const User = require('../models/user');
 const Organization = require('../routes/orgs');
 
 // Get all reviews for a specific org
-router.get('/org/:orgId', async (req, res) => {
+router.get('/orgs/:orgId', async (req, res) => {
   try {
     const reviews = await Review.find({ organization: req.params.orgId }).populate('reviewer', 'name');
     res.json(reviews);
@@ -15,19 +15,19 @@ router.get('/org/:orgId', async (req, res) => {
   }
 });
 
-router.get('/org/:orgId/average', async (req, res) => {
+router.get('/orgs/:id/average', async (req, res) => {
   try {
-    const result = await Review.aggregate([
-      { $match: { organization: new mongoose.Types.ObjectId(req.params.orgId) } },
-      { $group: { _id: null, average: { $avg: '$rating' } } }
-    ]);
-    const average = result[0]?.average || 0;
-    res.json({ average });
+    const reviews = await Review.find({ org: req.params.id });
+    if (!reviews.length) return res.json({ average: 0 });
+
+    const avg = reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length;
+    res.json({ average: avg });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Failed to compute average rating' });
+    res.status(500).json({ message: 'Server error calculating average' });
   }
 });
+
 
 // Create a new review
 router.post('/org/:orgId', async (req, res) => {

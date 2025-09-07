@@ -16,11 +16,10 @@ router.get('/', async (req, res) => {
 });
 
 // GET a single organization by ID
-router.get('/:id', async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
-    const org = await User.findOne({ _id: req.params.id, role: 'organization' });
-    if (!org) return res.status(404).json({ message: 'Organization not found' });
-
+    const org = await User.findById(req.params.id);
+    if (!org) return res.status(404).json({ error: "Not found" });
     res.json(org);
   } catch (err) {
     console.error(err);
