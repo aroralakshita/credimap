@@ -1,7 +1,11 @@
 import { Box, Button, Flex, Heading, Text, HStack, VStack, SimpleGrid } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 
+
+
 export default function Home() {
+  const navigate = useNavigate();
   return (
     <Layout>
       {/* Hero Section */}
@@ -13,7 +17,7 @@ export default function Home() {
         py={24}
         px={6}
         bgGradient="linear(to-tr, #E8B9AB, #D6EFFF, #F4E285)"
-        color="0"
+        color="255"
       >
         <Heading fontSize={{ base: "4xl", md: "5xl" }} fontWeight="bold">
           Find & Review Nonprofits
@@ -23,7 +27,7 @@ export default function Home() {
           opportunities that matter.
         </Text>
 
-        <HStack spacing={4} mt={8}>
+        {/*<HStack spacing={4} mt={8}>
           <Button
             size="lg"
             bg="#D6EFFF"
@@ -40,16 +44,20 @@ export default function Home() {
           >
             Get Started
           </Button>
-        </HStack>
+        </HStack>*/}
       </Flex>
 
       {/* Features Section */}
-      <Box py={20} px={6} maxW="7xl" mx="auto">
+      <Box py={0} px={6} maxW="7xl" mx="auto" mt={-10}>
         <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10}>
           {[
-            { title: "⭐ Reviews", desc: "See student reviews & ratings of nonprofits." },
-            { title: "🗺️ Map", desc: "Browse organizations across locations & categories." },
-            { title: "📊 Dashboard", desc: "Manage org profiles & track reviews easily." },
+            { title: "Review Organizations", desc: "Your insights help others make smarter choices.", onClick: () => navigate(`/auth`)},
+            { title: "Explore Map", desc: "Find opportunities tailored to your interests and location.", onClick: () => navigate(`/orgmap`) },
+            { title: "Get Started", desc: "Showcase your organization and grow your impact.", onClick: () => navigate(`/auth`) },
+            //{ title: "⭐ Reviews", desc: "See student reviews & ratings of nonprofits." },
+            //{ title: "📊 Dashboard", desc: "Manage org profiles & track reviews easily." },
+
+            
           ].map((feature, idx) => (
             <Box
               key={idx}
@@ -58,6 +66,8 @@ export default function Home() {
               rounded="2xl"
               shadow="xl"
               _hover={{ shadow: "2xl", transform: "translateY(-5px)", transition: "all 0.3s" }}
+                onClick={feature.onClick}
+  cursor={feature.onClick ? "pointer" : "default"}
             >
               <Heading fontSize="xl" mb={2} color="#E8B9AB">
                 {feature.title}
