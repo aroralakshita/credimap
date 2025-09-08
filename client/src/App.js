@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import axios from 'axios';
 
@@ -46,10 +47,12 @@ function App() {
     setUser(loggedInUser);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    setUser(null);
-  };
+const handleLogout = () => {
+  localStorage.removeItem("token");
+  setUser(null);
+};
+
+
 
   if (loading) return <div>Loading...</div>;
 
@@ -66,7 +69,8 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/protectedroute" element={<ProtectedRoute />} />
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
-        <Route path="/org/:id" element={<OrgProfile />}  />
+        <Route path="/org/:orgId" element={<OrgProfile user={user} />} />
+
         
         <Route
   path="/dashboard"
