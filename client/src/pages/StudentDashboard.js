@@ -1,38 +1,78 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import axios from "axios";
 
-function StudentDashboard({ user, onLogout }) {
+export default function StudentDashboard() {
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [reviews, setReviews] = useState([]);
+
+  useEffect(() => {
+    if (user?.role !== "student") return;
+
+    const fetchReviews = async () => {
+      try {
+        const res = await axios.get(`/api/reviews?studentId=${user.id}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        setReviews(res.data);
+      } catch (err) {
+        console.error("Failed to fetch reviews", err);
+      }
+    };
+
+    fetchReviews();
+  }, [user]);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    onLogout();
-    navigate('/login');
+    logout();
+    navigate("/auth");
   };
 
   return (
-    <div className="max-w-2xl mx-auto mt-16 bg-white p-8 rounded-xl shadow-lg text-center">
-      <h1 className="text-3xl font-bold mb-4">Welcome, {user.name}!</h1>
-      <p className="text-lg mb-6">You are logged in as: <span className="font-semibold">{user.role}</span></p>
+    <div className="min-h-screen bg-gradient-to-tr from-[#E8B9AB] via-[#D6EFFF] to-[#F4E285] p-6 flex justify-center items-start">
+      <div className="w-full max-w-4xl space-y-8">
+        
+        {/* Welcome Card */}
+        <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+          <h1 className="text-4xl font-bold mb-2">Welcome, {user?.name}!</h1>
+          <p className="text-lg text-gray-700 mb-6">
+            You are logged in as <span className="font-semibold">{user?.role}</span>
+          </p>
+          <div className="flex justify-center gap-4 flex-wrap">
+            <button
+              onClick={() => navigate("/orgmap")}
+              className="bg-[#E8B9AB] hover:bg-sky-200 text-white font-semibold px-6 py-3 rounded-xl shadow-md transition"
+            >
+              Explore Organizations
+            </button>
+          </div>
+        </div>
 
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">Explore Organizations</h2>
-        <button 
-          onClick={() => navigate('/')} 
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-        >
-          Browse Map
-        </button>
+        {/* Reviews Section */}
+        <div className="bg-white rounded-2xl shadow-xl p-6">
+          <h2 className="text-2xl font-bold mb-4 text-gray-800">Your Reviews</h2>
+          {reviews.length === 0 ? (
+            <p className="text-gray-600">You haven’t submitted any reviews yet.</p>
+          ) : (
+            <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
+              {reviews.map((r, idx) => (
+                <div
+                  key={idx}
+                  className="bg-gradient-to-tr from-[#F4E285] via-[#D6EFFF] to-[#E8B9AB] p-5 rounded-2xl shadow-lg border border-gray-200 transition hover:scale-105"
+                >
+                  <h3 className="font-bold text-lg mb-2">{r.orgName}</h3>
+                  <p className="mb-2 text-yellow-600 font-semibold">
+                    {"⭐".repeat(r.rating)}
+                  </p>
+                  <p className="text-gray-700">{r.text}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-
-      <button 
-        onClick={handleLogout} 
-        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
-      >
-        Logout
-      </button>
     </div>
   );
 }
-
-export default StudentDashboard;
