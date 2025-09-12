@@ -8,7 +8,10 @@ const User = require('../models/user.js');
 // GET all organizations
 router.get('/', async (req, res) => {
   try {
-    const orgs = await User.find({ role: 'organization' }).select('name location _id format category');
+    const validOrgRoles = ["organization", "nonprofit", "company", "youthorg"];
+
+    const orgs = await User.find({ role: { $in: validOrgRoles } })
+    .select("name location _id format category");
     res.json(orgs);
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
