@@ -34,7 +34,7 @@ export default function OrgMap() {
     const fetchOrgs = async () => {
       try {
         const res = await axios.get("/api/orgs");
-        setOrganizations(res.data.filter((o) => o?.location?.city));
+        setOrganizations(res.data.filter((o) => o.location?.city));
       } catch (err) {
         console.error(err);
       }
