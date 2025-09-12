@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import {
   Box, Flex, Heading, Text, Input, Select, Textarea, Button,
   VStack, HStack, useToast, Avatar,
   Stat, StatLabel, StatNumber, StatHelpText
 } from '@chakra-ui/react';
 
-export default function OrgDashboard() {
+export default function OrgDashboard({ user, onLogout }) {
   const toast = useToast();
   const [org, setOrg] = useState(null);
+  const navigate = useNavigate();
   const [reviews, setReviews] = useState([]);
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
@@ -48,7 +50,7 @@ export default function OrgDashboard() {
           tiktok: res.data.tiktok || ''
         });
 
-        const reviewRes = await axios.get(`/api/reviews/org/${res.data._id}`);
+        const reviewRes = await axios.get(`/api/reviews/orgs/${res.data._id}`);
         setReviews(reviewRes.data);
       } catch (err) {
         toast({
@@ -101,12 +103,18 @@ export default function OrgDashboard() {
         <Heading textAlign="left" color="gray.800">
           Your Dashboard
         </Heading>
-        {!editMode && (
-          <Button colorScheme="yellow" size="sm" onClick={() => setEditMode(true)}>
-            Edit
-          </Button>
-        )}
-      </Flex>
+<Flex align="center" gap={3}>
+    {!editMode && (
+      <Button colorScheme="yellow" size="sm" onClick={() => setEditMode(true)}>
+        Edit
+      </Button>
+    )}
+    <Button colorScheme="blue" size="sm" onClick={() => navigate(`/org/${org._id}`)}>
+      Preview Profile
+    </Button>
+  </Flex>
+</Flex>
+      
 
       {editMode ? (
         <VStack spacing={3} align="stretch">
