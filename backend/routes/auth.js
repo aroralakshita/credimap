@@ -6,11 +6,14 @@ const User = require('../models/user.js');
 
 // REGISTER
 router.post('/register', async (req, res) => {
-  const { role, name, email, password, category, format, location } = req.body;
+  const { role, name, email, password, category, format, description, location } = req.body;
 
-  // ✅ Validate required fields
   if (!name || !email || !password || !role || !location?.city || !location?.country) {
     return res.status(400).json({ message: 'Missing required fields' });
+  }
+
+  if (role !== 'student' && (!category || !format || !description)) {
+    return res.status(400).json({ message: 'Missing organization details' });
   }
 
   try {
@@ -21,19 +24,26 @@ router.post('/register', async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      category, // ✅ include this
-      format,   // ✅ and this
-      location
+      location,
+      category: role !== 'student' ? category : undefined,
+      format: role !== 'student' ? format : undefined,
+      description: role !== 'student' ? description : undefined,
     });
 
     await newUser.save();
-    res.json({ message: 'User created', user: newUser });
+    const token = jwt.sign(
+      { id: newUser._id, role: newUser.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+    res.json({ message: 'User created', token, user: newUser });
 
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Error creating user' });
   }
 });
+
 
 // LOGIN
 router.post('/login', async (req, res) => {
