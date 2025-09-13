@@ -33,6 +33,7 @@ const showBackButton =
 
 
   useEffect(() => {
+    
     const fetchData = async () => {
       try {
         const orgRes = await axios.get(`/api/orgs/${orgId}`);
@@ -244,7 +245,7 @@ const showBackButton =
 </Box>
 
         {/* Listings */}
-        <Box flex="1" minW="525px" bg="white" p={6} rounded="2xl" shadow="md" _hover={{ shadow: "lg" }}>
+        {/*<Box flex="1" minW="525px" bg="white" p={6} rounded="2xl" shadow="md" _hover={{ shadow: "lg" }}>
           <Heading size="md" mb={4}>Listings</Heading>
           {listings.length === 0 ? (
             <Text>No listings available.</Text>
@@ -259,7 +260,7 @@ const showBackButton =
               ))}
             </VStack>
           )}
-        </Box>
+        </Box>*/}
       </Flex>
     </Box>
   );
