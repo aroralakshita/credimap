@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Box, Flex, Button, HStack, useToast } from "@chakra-ui/react";
+import { Box, Flex, Button, HStack, useToast, Image } from "@chakra-ui/react";
 import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
@@ -32,11 +32,16 @@ const dashboardLink = user
   };
 
   return (
-    <Box bg="white" px={4} shadow="md" position="sticky" top={0} zIndex={50}>
-      <Flex h={16} alignItems="center" justifyContent="space-between">
-        <Box fontWeight="bold" fontSize="xl" color="blue.600">
-          Nonprofit Review
-        </Box>
+<Box bg="white" px={4} shadow="md" position="sticky" top={0} zIndex={50}>
+    <Flex h={16} alignItems="center" justifyContent="space-between">
+      {/* Logo + Text container */}
+      <Flex align="center" gap={2}>
+        <Image
+          src="/credimap_logo.png" // <-- path to your local image in /public
+          alt="Logo"
+          boxSize="150px"   // size of the image
+        />
+      </Flex>
 
         <HStack spacing={4}>
           <Link to="/">
