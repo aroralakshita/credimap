@@ -20,11 +20,10 @@ export default function Home() {
         color="255"
       >
         <Heading fontSize={{ base: "4xl", md: "5xl" }} fontWeight="bold">
-          Find & Review Nonprofits
+          Discover. Review. Connect.
         </Heading>
         <Text mt={4} fontSize={{ base: "md", md: "lg" }} maxW="3xl" opacity={0.85}>
-          Explore organizations, share experiences, and help students discover
-          opportunities that matter.
+          Every org is reviewed by real students, so you know what’s credible, not just clickable.
         </Text>
 
         {/*<HStack spacing={4} mt={8}>
