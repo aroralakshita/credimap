@@ -8,6 +8,10 @@ export default function Home() {
   const navigate = useNavigate();
   return (
     <Layout>
+        <Box
+    bgGradient="linear(to-tr, #E8B9AB, #D6EFFF, #F4E285)" // vertical gradient ending in yellow
+    minH="100vh"
+  >
       {/* Hero Section */}
       <Flex
         direction="column"
@@ -16,14 +20,13 @@ export default function Home() {
         textAlign="center"
         py={24}
         px={6}
-        bgGradient="linear(to-tr, #E8B9AB, #D6EFFF, #F4E285)"
         color="255"
       >
         <Heading fontSize={{ base: "4xl", md: "5xl" }} fontWeight="bold">
           Discover. Review. Connect.
         </Heading>
         <Text mt={4} fontSize={{ base: "md", md: "lg" }} maxW="3xl" opacity={0.85}>
-          Every org is reviewed by real students, so you know what’s credible, not just clickable.
+          Every organization is reviewed by real students, so you know what’s credible, not just clickable.
         </Text>
 
         {/*<HStack spacing={4} mt={8}>
@@ -77,6 +80,7 @@ export default function Home() {
             </Box>
           ))}
         </SimpleGrid>
+      </Box>
       </Box>
     </Layout>
   );
