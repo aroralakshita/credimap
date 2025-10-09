@@ -4,7 +4,9 @@ const path = require('path');
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: ["https://your-frontend.vercel.app"]
+}));
 app.use(express.json());
 
 // API Routes
