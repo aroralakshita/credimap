@@ -26,7 +26,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/orgmap" element={<OrgMap />} />
-        <Route path="/org/:orgId" element={<ProtectedRoute> <OrgProfile user={user} /> </ProtectedRoute> }/>
+        <Route path="/org/:orgId" element={<OrgProfile user={user} />} />
         <Route path="/auth" element={<AuthPage onLogin={login} />} />
         <Route path="/dashboard" element={<OrgDashboard />} />
         <Route path="/studentdashboard" element={<StudentDashboard />} />
