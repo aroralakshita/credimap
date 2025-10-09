@@ -76,7 +76,7 @@ const payload = {
   })
 };
 
-      const res = await axios.post("/api/auth/register", payload);
+      const res = await axios.post(`${API_BASE}/api/auth/register`, payload);
       localStorage.setItem("token", res.data.token);
       toast({
         title: "Registered successfully!",

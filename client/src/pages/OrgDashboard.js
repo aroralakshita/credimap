@@ -35,7 +35,7 @@ export default function OrgDashboard({ user, onLogout }) {
     const fetchData = async () => {
       const token = localStorage.getItem('token');
       try {
-        const res = await axios.get('/api/orgs/me/dashboard', {
+        const res = await axios.get(`${API_BASE}/api/orgs/me/dashboard`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setOrg(res.data);
@@ -50,7 +50,7 @@ export default function OrgDashboard({ user, onLogout }) {
           tiktok: res.data.tiktok || ''
         });
 
-        const reviewRes = await axios.get(`/api/reviews/orgs/${res.data._id}`);
+        const reviewRes = await axios.get(`${API_BASE}/api/reviews/orgs/${res.data._id}`);
         setReviews(reviewRes.data);
       } catch (err) {
         toast({
@@ -70,7 +70,7 @@ export default function OrgDashboard({ user, onLogout }) {
   const handleSave = async () => {
     const token = localStorage.getItem('token');
     try {
-      const res = await axios.put(`/api/orgs/update-profile`, {
+      const res = await axios.put(`${API_BASE}/api/orgs/update-profile`, {
         name: formData.name,
         location: { description: formData.description },
         category: formData.category,

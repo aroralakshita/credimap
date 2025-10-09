@@ -13,7 +13,7 @@ export default function StudentDashboard() {
 
     const fetchReviews = async () => {
       try {
-        const res = await axios.get(`/api/reviews?studentId=${user.id}`, {
+        const res = await axios.get(`${API_BASE}/api/reviews?studentId=${user.id}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         setReviews(res.data);

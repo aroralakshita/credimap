@@ -36,13 +36,13 @@ const showBackButton =
     
     const fetchData = async () => {
       try {
-        const orgRes = await axios.get(`/api/orgs/${orgId}`);
+        const orgRes = await axios.get(`${API_BASE}/api/orgs/${orgId}`);
         setOrg(orgRes.data);
 
-        const reviewRes = await axios.get(`/api/reviews/orgs/${orgId}`);
+        const reviewRes = await axios.get(`${API_BASE}/api/reviews/orgs/${orgId}`);
         setReviews(reviewRes.data);
 
-        const avgRes = await axios.get(`/api/reviews/orgs/${orgId}/average`);
+        const avgRes = await axios.get(`${API_BASE}/api/reviews/orgs/${orgId}/average`);
         setAverage(avgRes.data.average.toFixed(1));
         setLoading(false);
       } catch (err) {
@@ -60,7 +60,7 @@ const showBackButton =
     if (!token) return alert('Please log in to submit a review.');
 
     try {
-      await axios.post(`/api/reviews/orgs/${orgId}`, {
+      await axios.post(`${API_BASE}/api/reviews/orgs/${orgId}`, {
   rating: parseInt(rating, 10),
   comment: comment.trim(),
       }, {
