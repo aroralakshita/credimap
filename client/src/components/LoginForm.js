@@ -16,12 +16,7 @@ export default function LoginForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const API_BASE = process.env.REACT_APP_API_URL || "https://credimap-backend.onrender.com/api";
-
-const res = await axios.post(`${API_BASE}/auth/login`, { email, password }, {
-  headers: { "Content-Type": "application/json" }
-});
-
+      const res = await axios.post(`${API_BASE}/api/auth/login`, { email, password });
 
       // save user globally
       login(res.data.user, res.data.token);
