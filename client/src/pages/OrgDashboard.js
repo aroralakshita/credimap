@@ -71,6 +71,7 @@ export default function OrgDashboard({ user, onLogout }) {
   const handleSave = async () => {
     const token = localStorage.getItem('token');
     try {
+      const API_BASE = process.env.REACT_APP_API_URL || "https://credimap-backend.onrender.com";
       const res = await axios.put(`${API_BASE}/api/orgs/update-profile`, {
         name: formData.name,
         location: { description: formData.description },

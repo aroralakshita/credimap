@@ -61,6 +61,7 @@ const showBackButton =
     if (!token) return alert('Please log in to submit a review.');
 
     try {
+      const API_BASE = process.env.REACT_APP_API_URL || "https://credimap-backend.onrender.com";
       await axios.post(`${API_BASE}/api/reviews/orgs/${orgId}`, {
   rating: parseInt(rating, 10),
   comment: comment.trim(),
