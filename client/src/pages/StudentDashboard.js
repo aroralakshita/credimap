@@ -13,6 +13,7 @@ export default function StudentDashboard() {
 
     const fetchReviews = async () => {
       try {
+        const API_BASE = process.env.REACT_APP_API_URL || "https://credimap-backend.onrender.com";
         const res = await axios.get(`${API_BASE}/api/reviews?studentId=${user.id}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });

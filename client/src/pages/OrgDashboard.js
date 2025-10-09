@@ -35,6 +35,7 @@ export default function OrgDashboard({ user, onLogout }) {
     const fetchData = async () => {
       const token = localStorage.getItem('token');
       try {
+        const API_BASE = process.env.REACT_APP_API_URL || "https://credimap-backend.onrender.com";
         const res = await axios.get(`${API_BASE}/api/orgs/me/dashboard`, {
           headers: { Authorization: `Bearer ${token}` }
         });

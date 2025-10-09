@@ -75,7 +75,7 @@ const payload = {
     description: formData.description
   })
 };
-
+      const API_BASE = process.env.REACT_APP_API_URL || "https://credimap-backend.onrender.com";
       const res = await axios.post(`${API_BASE}/api/auth/register`, payload);
       localStorage.setItem("token", res.data.token);
       toast({

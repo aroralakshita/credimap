@@ -36,6 +36,7 @@ const showBackButton =
     
     const fetchData = async () => {
       try {
+        const API_BASE = process.env.REACT_APP_API_URL || "https://credimap-backend.onrender.com";
         const orgRes = await axios.get(`${API_BASE}/api/orgs/${orgId}`);
         setOrg(orgRes.data);
 

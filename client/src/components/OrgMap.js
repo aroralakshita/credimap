@@ -33,6 +33,7 @@ export default function OrgMap() {
   useEffect(() => {
     const fetchOrgs = async () => {
       try {
+        const API_BASE = process.env.REACT_APP_API_URL || "https://credimap-backend.onrender.com";
         const res = await axios.get(`${API_BASE}/api/orgs`);
         setOrganizations(res.data.filter((o) => o.location?.city));
       } catch (err) {
