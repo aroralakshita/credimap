@@ -30,6 +30,7 @@ function App() {
         <Route path="/auth" element={<AuthPage onLogin={login} />} />
         <Route path="/dashboard" element={<OrgDashboard />} />
         <Route path="/studentdashboard" element={<StudentDashboard />} />
+        <Route path="/protectedroute" element={<ProtectedRoute />} />
       </Routes>
      </div>
     </Router>
