@@ -23,10 +23,10 @@ export default function Home() {
         color="255"
       >
         <Heading fontSize={{ base: "4xl", md: "5xl" }} fontWeight="bold">
-          Discover. Review. Connect.
+          Verified by Students. Trusted Everywhere.
         </Heading>
         <Text mt={4} fontSize={{ base: "md", md: "lg" }} maxW="3xl" opacity={0.85}>
-          Every organization is reviewed by real students, so you know what’s credible, not just clickable.
+          Every review comes from a verified student, so you know what’s credible, not just clickable.
         </Text>
 
         {/*<HStack spacing={4} mt={8}>
@@ -53,8 +53,8 @@ export default function Home() {
       <Box py={0} px={6} maxW="7xl" mx="auto" mt={-10}>
         <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10}>
           {[
-            { title: "Review Organizations", desc: "Your insights help others make smarter choices.", onClick: () => navigate(`/auth`)},
-            { title: "Explore Map", desc: "Find opportunities tailored to your interests and location.", onClick: () => navigate(`/orgmap`) },
+            { title: "Share Your Experience", desc: "Your insights help others make smarter choices.", onClick: () => navigate(`/auth`)},
+            { title: "Explore Map", desc: "Discover opportunities tailored to your interests and location.", onClick: () => navigate(`/orgmap`) },
             { title: "Get Started", desc: "Showcase your organization and grow your impact.", onClick: () => navigate(`/auth`) },
             //{ title: "⭐ Reviews", desc: "See student reviews & ratings of nonprofits." },
             //{ title: "📊 Dashboard", desc: "Manage org profiles & track reviews easily." },
