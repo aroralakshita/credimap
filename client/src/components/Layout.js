@@ -15,7 +15,7 @@ export default function Layout({ children }) {
       {/* Footer */}
       <Box textAlign="center" py={6} mt={8} color="34">
         <Text fontSize="sm">
-          © {new Date().getFullYear()} Nonprofit Review. All rights reserved.
+          © {new Date().getFullYear()} Credimap. All rights reserved.
         </Text>
       </Box>
     </Flex>
