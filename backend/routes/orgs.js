@@ -3,7 +3,7 @@ const axios = require('axios');
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/authenticateToken.js');
-const Org = require('../models/orgs.js'); // ← Make sure this path is correct!
+const Org = require('../models/orgs.js');
 
 async function geocodeLocation(city, state, country) {
   // Build location string from whatever is available
