@@ -9,8 +9,7 @@ import {
 } from "react-simple-maps";
 import axios from "axios";
 
-const geoUrl =
-  "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
+const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
 export default function OrgMap() {
   const navigate = useNavigate();
@@ -24,10 +23,8 @@ export default function OrgMap() {
   const [selectedCity, setSelectedCity] = useState("");
 
   const categoryOptions = [
-    "astronomy","biology","business","chemistry","computer science","data science",
-    "education","engineering","environmental science","history","law","literature",
-    "mathematics","medicine","neuroscience","philosophy","physics","political science",
-    "psychology","social work","sociology","stem","technology"
+    "STEM", "Arts", "Community Service", "Education", "Environment", 
+    "Health", "Technology", "Other"
   ].sort();
 
   useEffect(() => {
@@ -35,28 +32,33 @@ export default function OrgMap() {
       try {
         const API_BASE = process.env.REACT_APP_API_URL || "https://credimap-backend.onrender.com";
         const res = await axios.get(`${API_BASE}/api/orgs`);
-        setOrganizations(res.data.filter((o) => o.location?.city));
+        
+        console.log('=== FETCHED ORGS ===');
+        console.log('Total orgs:', res.data.length);
+        
+        // Log each org's coordinates
+        res.data.forEach(org => {
+          console.log(`${org.name}:`, {
+            city: org.location?.city,
+            coords: org.location?.coordinates,
+            hasCoords: !!org.location?.coordinates
+          });
+        });
+
+        setOrganizations(res.data);
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching orgs:", err);
       }
     };
     fetchOrgs();
   }, []);
 
-  const getCoords = (org) => {
-    if (!org.location?.city) return null;
-    const city = org.location.city.toLowerCase();
-    const coordsMap = {
-      toronto: [-79.3832, 43.6532],
-      "new york": [-74.006, 40.7128],
-      boston: [-71.0589, 42.3601],
-      "san francisco": [-122.4194, 37.7749],
-      paris: [2.3514, 48.8575],
-    };
-    return coordsMap[city] || null;
-  };
-
   const filteredOrgs = organizations.filter((org) => {
+    // Only show orgs with valid coordinates
+    if (!org.location?.coordinates || org.location.coordinates.length !== 2) {
+      return false;
+    }
+
     const catMatch =
       !selectedCategory ||
       org.category?.toLowerCase() === selectedCategory.toLowerCase();
@@ -68,13 +70,22 @@ export default function OrgMap() {
     return catMatch && formatMatch && cityMatch;
   });
 
+  console.log('Filtered orgs for display:', filteredOrgs.length);
+
+  // Create clusters for organizations in similar locations
   const clusters = {};
   filteredOrgs.forEach((org) => {
-    const coords = getCoords(org);
-    if (!coords) return;
-    const key = `${Math.round(coords[0] * 2) / 2}_${
-      Math.round(coords[1] * 2) / 2
-    }`;
+    const coords = org.location?.coordinates;
+    if (!coords || coords.length !== 2) return;
+    
+    // Validate coordinates are in valid range
+    const [lon, lat] = coords;
+    if (lon < -180 || lon > 180 || lat < -90 || lat > 90) {
+      console.warn(`Invalid coordinates for ${org.name}:`, coords);
+      return;
+    }
+    
+    const key = `${Math.round(coords[0] * 2) / 2}_${Math.round(coords[1] * 2) / 2}`;
     if (!clusters[key]) clusters[key] = [];
     clusters[key].push(org);
   });
@@ -83,11 +94,14 @@ export default function OrgMap() {
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 to-sky-200">
       {/* Header */}
       <header className="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-10">
-        <h1 className="text-xl font-bold"
-            style={{ color: "#E8B9AB" }}
-        >
+        <h1 className="text-xl font-bold" style={{ color: "#E8B9AB" }}>
           🌍 Organization Map
         </h1>
+        <div className="flex gap-4 text-sm">
+          <span className="text-gray-600">
+            Total: {organizations.length}
+          </span>
+        </div>
       </header>
 
       {/* Filters floating card */}
@@ -162,7 +176,7 @@ export default function OrgMap() {
 
             {Object.keys(clusters).map((key) => {
               const orgGroup = clusters[key];
-              const coords = getCoords(orgGroup[0]);
+              const coords = orgGroup[0].location?.coordinates;
               if (!coords) return null;
 
               return orgGroup.map((org, idx) => {
@@ -205,18 +219,18 @@ export default function OrgMap() {
 
         {/* Zoom Controls */}
         <div className="fixed bottom-8 right-8 flex flex-col space-y-3 z-50">
-<button
-  className="w-10 h-10 rounded-full shadow-md bg-[#E8B9AB] hover:bg-amber-300 transition flex items-center justify-center text-white"
-  onClick={() => setZoom((z) => Math.min(z * 1.5, 8))}
->
-  +
-</button>
-<button
-  className="w-10 h-10 rounded-full shadow-md bg-[#E8B9AB] hover:bg-amber-300 transition flex items-center justify-center text-white"
-  onClick={() => setZoom((z) => Math.max(z / 1.5, 1))}
->
-  –
-</button>
+          <button
+            className="w-10 h-10 rounded-full shadow-md bg-[#E8B9AB] hover:bg-amber-300 transition flex items-center justify-center text-white"
+            onClick={() => setZoom((z) => Math.min(z * 1.5, 8))}
+          >
+            +
+          </button>
+          <button
+            className="w-10 h-10 rounded-full shadow-md bg-[#E8B9AB] hover:bg-amber-300 transition flex items-center justify-center text-white"
+            onClick={() => setZoom((z) => Math.max(z / 1.5, 1))}
+          >
+            –
+          </button>
         </div>
       </main>
     </div>
