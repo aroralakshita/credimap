@@ -3,51 +3,65 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user.js');
+const auth = require('../middleware/authenticateToken.js');; 
 
 // REGISTER
 router.post('/register', async (req, res) => {
-  const { role, name, email, password, category, format, description, location } = req.body;
+  const { name, email, password } = req.body;
 
-  if (!name || !email || !password || !role || !location?.city || !location?.country) {
+  if (!name || !email || !password) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
 
-  if (role !== 'student' && (!category || !format || !description)) {
-    return res.status(400).json({ message: 'Missing organization details' });
+  if (password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+  }
+
+  // Check if user exists
+  let user = await User.findOne({ email });
+  if (user) {
+    return res.status(400).json({ message: 'User already exists' });
   }
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({
-      role,
       name,
       email,
       password: hashedPassword,
-      location,
-      category: role !== 'student' ? category : undefined,
-      format: role !== 'student' ? format : undefined,
-      description: role !== 'student' ? description : undefined,
     });
 
     await newUser.save();
+
     const token = jwt.sign(
-      { id: newUser._id, role: newUser.role },
+      { id: newUser._id, email: newUser.email },
       process.env.JWT_SECRET,
-      { expiresIn: '1d' }
+      { expiresIn: '7d' }
     );
-    res.json({ message: 'User created', token, user: newUser });
+    res.json({ 
+      message: 'User created',
+      token, 
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email
+      }
+    });
 
   } catch (err) {
-    console.error(err);
+    console.error('Registration error:', err);
     res.status(500).json({ message: 'Error creating user' });
   }
 });
 
-
 // LOGIN
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Please provide email and password' });
+  }
 
   try {
     const user = await User.findOne({ email }).lean();
@@ -59,11 +73,8 @@ router.post('/login', async (req, res) => {
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: '1d' }
+      { expiresIn: '7d' }
     );
-
-  console.log("JWT Secret:", process.env.JWT_SECRET);
-
 
     res.json({
       token,
@@ -72,20 +83,17 @@ router.post('/login', async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        location: user.location,
       }
     });
 
   } catch (err) {
-    console.error(err);
+    console.error('Login error', err);
     res.status(500).json({ message: 'Login failed' });
   }
 });
 
-const authenticateToken = require('../middleware/authenticateToken');
-
 // ✅ PERSISTENT LOGIN SUPPORT
-router.get('/me', authenticateToken, async (req, res) => {
+router.get('/me', auth, async (req, res) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ message: 'No token provided' });
@@ -105,7 +113,6 @@ router.get('/me', authenticateToken, async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        location: user.location,
       }
     });
 
