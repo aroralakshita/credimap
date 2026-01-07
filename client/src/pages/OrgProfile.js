@@ -3,9 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
   Box, Flex, Heading, Text, VStack, HStack, Avatar,
-  Stat, StatLabel, StatNumber, StatHelpText, Button
-} from '@chakra-ui/react';
-import { FaInstagram, FaLinkedin, FaLink, FaTiktok } from 'react-icons/fa';
+  Stat, StatLabel, StatNumber, StatHelpText, Button, useDisclosure, } from '@chakra-ui/react';
+import { FaInstagram, FaLinkedin, FaLink, FaTiktok, FaGlobe } from 'react-icons/fa';
+
 
 export default function OrgProfile({ user }) {
   const { orgId } = useParams();
@@ -19,6 +19,7 @@ export default function OrgProfile({ user }) {
   const [refresh, setRefresh] = useState(false);
   const [average, setAverage] = useState(0);
   const navigate = useNavigate();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
 // Show "Back to Dashboard" ONLY if:
 // 1️⃣ User is logged in
@@ -100,14 +101,23 @@ const showBackButton =
           <Heading textAlign="left" color="gray.800">
             {org.name}
             <p className="text-gray-100 italic text-2xl">
-              {org.location?.city}, {org.location?.country || 'Location unknown'}
+              {org.location && (
+  <Text>
+    {org.location.city
+      ? `${org.location.city}, ${org.location.country || 'Location unknown'}`
+      : org.location.state
+        ? `${org.location.state}, ${org.location.country || 'Location unknown'}`
+        : org.location.country || 'Location unknown'}
+  </Text>
+)}
+
             </p>
           </Heading>
 
           {/* Social Media beside name */}
           <div className="flex space-x-4 mb-6">
             {org.instagram && (
-              <a href={org.instagram} target="_blank" rel="noopener noreferrer"
+              <a href={`https://instagram.com/${org.instagram}`} target="_blank" rel="noopener noreferrer"
                  className="text-pink-600 hover:text-pink-700 text-2xl">
                 <FaInstagram />
               </a>
@@ -119,16 +129,27 @@ const showBackButton =
               </a>
             )}
             {org.linktree && (
-              <a href={org.linktree} target="_blank" rel="noopener noreferrer"
+              <a href={`https://linktr.ee/${org.linktree}`} target="_blank" rel="noopener noreferrer"
                  className="text-green-600 hover:text-green-700 text-2xl">
                 <FaLink />
               </a>
             )}
             {org.tiktok && (
-              <a href={org.tiktok} target="_blank" rel="noopener noreferrer"
-                 className="text-black hover:text-gray-800 text-2xl">
+              <a href={`https://tiktok.com/@${org.tiktok}`} target="_blank" rel="noopener noreferrer"
+                 className="text-black hover:text-purple-950 text-2xl">
                 <FaTiktok />
               </a>
+            )}
+
+            {org.website && (
+              <a
+                href={org.website.startsWith('http') ? org.website : `https://${org.website}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:text-blue-800 text-2xl"
+                aria-label="Website">
+              <FaGlobe />
+            </a>
             )}
           </div>
         </HStack>
