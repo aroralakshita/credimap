@@ -4,9 +4,15 @@ const path = require('path');
 
 const app = express();
 
+app.use((req, res, next) => {
+  console.log(req.method, req.url);
+  next();
+});
+
+
 app.use(cors({
-  origin: ["https://credimap-mu.vercel.app"], // your Vercel URL
-  credentials: true, // if you use cookies
+  origin: ['https://credimap-mu.vercel.app'],
+  credentials: true
 }));
 
 app.use(express.json());
