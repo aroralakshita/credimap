@@ -1,6 +1,7 @@
 import { Box, Button, Flex, Heading, Text, HStack, VStack, SimpleGrid } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
+import SubmitOrgForm from "../components/SubmitOrgForm";
 
 
 
@@ -81,7 +82,10 @@ export default function Home() {
           ))}
         </SimpleGrid>
       </Box>
+      <Box py={16} px={6}>
+          <SubmitOrgForm />
       </Box>
-    </Layout>
+    </Box>
+  </Layout>
   );
 }
