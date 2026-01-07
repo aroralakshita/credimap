@@ -11,10 +11,12 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const toast = useToast();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
 const API_BASE = process.env.REACT_APP_API_URL || "https://credimap-backend.onrender.com";
 
@@ -34,12 +36,7 @@ const res = await axios.post(`${API_BASE}/api/auth/login`, { email, password }, 
         isClosable: true,
       });
 
-      // redirect to correct dashboard
-if (["nonprofit", "company", "youthorg"].includes(res.data.user.role)) {
-  navigate("/dashboard");
-} else {
-  navigate("/studentdashboard");
-}
+      navigate("/");
 
     } catch (err) {
       toast({
@@ -49,6 +46,8 @@ if (["nonprofit", "company", "youthorg"].includes(res.data.user.role)) {
         duration: 4000,
         isClosable: true,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
