@@ -11,10 +11,9 @@ export default function Navbar() {
 
   // Determine correct dashboard route
 const dashboardLink = user
-    ? ["nonprofit", "company", "youthorg"].includes(user.role)
-      ? "/dashboard"          // Org dashboard
-      : "/studentdashboard"   // Student dashboard
-    : "/auth";                // If not logged in
+  ? "/studentdashboard"
+  : "/auth";
+               // If not logged in
 
 
   const handleDashboardClick = () => {
@@ -48,8 +47,7 @@ const dashboardLink = user
             <Button variant="ghost">Home</Button>
           </Link>
           <Link to="/orgmap">
-            <Button variant="ghost">Map</Button>
-          </Link>
+            <Button variant="ghost">Map</Button></Link>
 
           {/* Dashboard always visible */}
             <Button variant="ghost" onClick={handleDashboardClick}>Dashboard</Button>
