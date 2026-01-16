@@ -17,6 +17,7 @@ export default function OrgMap() {
   const [zoom, setZoom] = useState(1);
   const [center, setCenter] = useState([0, 20]);
   const [hoveredOrgId, setHoveredOrgId] = useState(null);
+  const [showFilters, setShowFilters] = useState(false);
 
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedFormat, setSelectedFormat] = useState("");
@@ -95,21 +96,41 @@ export default function OrgMap() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 to-sky-200">
       {/* Header */}
-      <header className="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-10">
-        <h1 className="text-xl font-bold" style={{ color: "#E8B9AB" }}>
+      <header className="bg-white shadow-md p-3 md:p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-2 sticky top-0 z-30">
+        <h1 className="text-lg md:text-xl font-bold" style={{ color: "#E8B9AB" }}>
           🌍 Organization Map
         </h1>
-        <div className="flex gap-4 text-sm">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 text-xs md:text-sm w-full md:w-auto">
           <span className="text-gray-600">
             Total: {organizations.length}
           </span>
+
+        {/* Mobile Filter Toggle */}
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="md:hidden bg-blue-500 text-white px-3 py-1 rounded-lg text-sm"
+          >
+            {showFilters ? 'Hide Filters' : 'Show Filters'}
+          </button>
         </div>
       </header>
 
+      {/* Filters - Responsive */}
+      <div 
+  className={`
+    ${showFilters ? "block" : "hidden"} md:block
+    bg-white/95 backdrop-blur-md shadow-lg
+    rounded-xl p-3 md:p-4
+    z-40
+    mx-3 md:mx-auto
+    mt-2
+    w-[calc(100%-1.5rem)] md:w-fit
+      `}>
+
       {/* Filters floating card */}
-      <div className="absolute top-20 left-1/2 -translate-x-1/2 z-20 bg-white/90 backdrop-blur-md shadow-lg rounded-xl p-4 flex flex-wrap gap-3">
+      <div className="flex flex-col md:flex-row gap-2 md:gap-3">
         <select
-          className="border px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500"
+          className="border px-2 md:px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm w-full md:w-auto"
           value={selectedFormat}
           onChange={(e) => setSelectedFormat(e.target.value)}
         >
@@ -120,7 +141,7 @@ export default function OrgMap() {
         </select>
 
         <select
-          className="border px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500"
+          className="border px-2 md:px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm w-full md:w-auto"
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
         >
@@ -133,7 +154,7 @@ export default function OrgMap() {
         </select>
 
         <select
-          className="border px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500"
+          className="border px-2 md:px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm w-full md:w-auto"
           value={selectedCity}
           onChange={(e) => setSelectedCity(e.target.value)}
         >
@@ -147,9 +168,10 @@ export default function OrgMap() {
             ))}
         </select>
       </div>
+    </div>
 
       {/* Map */}
-      <main className="flex-grow relative">
+      <main className="flex-grow relative mt-0 md:mt-0">
         <ComposableMap
           projectionConfig={{ scale: 160 }}
           width={980}
@@ -220,16 +242,15 @@ export default function OrgMap() {
         </ComposableMap>
 
         {/* Zoom Controls */}
-        <div className="fixed bottom-8 right-8 flex flex-col space-y-3 z-50">
+        <div className="fixed bottom-4 md:bottom-8 right-4 md:right-8 flex flex-col space-y-2 md:space-y-3 z-50">
           <button
-            className="w-10 h-10 rounded-full shadow-md bg-[#E8B9AB] hover:bg-amber-300 transition flex items-center justify-center text-white"
+            className="w-8 h-8 md:w-10 md:h-10 rounded-full shadow-md bg-[#E8B9AB] hover:bg-amber-300 transition flex items-center justify-center text-white text-lg md:text-xl font-bold"
             onClick={() => setZoom((z) => Math.min(z * 1.5, 8))}
           >
             +
           </button>
           <button
-            className="w-10 h-10 rounded-full shadow-md bg-[#E8B9AB] hover:bg-amber-300 transition flex items-center justify-center text-white"
-            onClick={() => setZoom((z) => Math.max(z / 1.5, 1))}
+            className="w-8 h-8 md:w-10 md:h-10 rounded-full shadow-md bg-[#E8B9AB] hover:bg-amber-300 transition flex items-center justify-center text-white text-lg md:text-xl font-bold"            onClick={() => setZoom((z) => Math.max(z / 1.5, 1))}
           >
             –
           </button>
