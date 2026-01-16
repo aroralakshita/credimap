@@ -15,16 +15,21 @@ const AuthPage = ({ onLogin }) => {
       justify="center"
       fontFamily="Ubuntu, sans-serif"
       bgGradient="linear(to-tr, #E8B9AB, #D6EFFF, #F4E285)"
-      p={6}
+      p={{ base: 4, md: 6 }}
     > 
-    <div style={{ maxWidth: 400, margin: "auto", padding: "2rem" }}>
+      <Box 
+        w="full" 
+        maxW={{ base: "100%", sm: "400px", md: "450px" }}
+        px={{ base: 4, md: 0 }}
+      >
+
       <AuthToggle isRegistering={isRegistering} setIsRegistering={setIsRegistering} />
       {isRegistering ? (
         <RegisterForm />
       ) : (
         <LoginForm onLogin={onLogin} />
       )}
-    </div>
+    </Box>
     </Flex>
   );
 };
