@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Text, HStack, VStack, SimpleGrid } from "@chakra-ui/react";
+import { Box, Flex, Heading, Text, SimpleGrid } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import SubmitOrgForm from "../components/SubmitOrgForm";

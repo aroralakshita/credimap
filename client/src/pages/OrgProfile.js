@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
   Box, Flex, Heading, Text, VStack, HStack, Avatar,
-  Stat, StatLabel, StatNumber, StatHelpText, Button, useDisclosure, } from '@chakra-ui/react';
+  Stat, StatLabel, StatNumber, StatHelpText, Button } from '@chakra-ui/react';
 import { FaInstagram, FaLinkedin, FaLink, FaTiktok, FaGlobe } from 'react-icons/fa';
 
 
@@ -11,7 +11,6 @@ export default function OrgProfile({ user }) {
   const { orgId } = useParams();
   const [org, setOrg] = useState(null);
   const [reviews, setReviews] = useState([]);
-  const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [rating, setRating] = useState(0);
@@ -19,7 +18,6 @@ export default function OrgProfile({ user }) {
   const [refresh, setRefresh] = useState(false);
   const [average, setAverage] = useState(0);
   const navigate = useNavigate();
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
 // Show "Back to Dashboard" ONLY if:
 // 1️⃣ User is logged in

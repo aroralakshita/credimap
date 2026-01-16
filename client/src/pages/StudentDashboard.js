@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 
 export default function StudentDashboard() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [reviews, setReviews] = useState([]);
 
@@ -25,11 +25,6 @@ export default function StudentDashboard() {
 
     fetchReviews();
   }, [user]);
-
-  const handleLogout = () => {
-    logout();
-    navigate("/auth");
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-tr from-[#E8B9AB] via-[#D6EFFF] to-[#F4E285] p-6 flex justify-center items-start">
