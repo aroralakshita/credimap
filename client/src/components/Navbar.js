@@ -1,74 +1,158 @@
 import React from "react";
+import {
+  Box,
+  Flex,
+  Button,
+  HStack,
+  IconButton,
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+  DrawerBody,
+  VStack,
+  useDisclosure,
+  useToast,
+  Image
+} from "@chakra-ui/react";
+import { HamburgerIcon } from "@chakra-ui/icons";
 import { useNavigate, Link } from "react-router-dom";
-import { Box, Flex, Button, HStack, useToast, Image } from "@chakra-ui/react";
 import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
-    const toast = useToast();
+  const toast = useToast();
   const navigate = useNavigate();
-
-
-  // Determine correct dashboard route
-const dashboardLink = user
-  ? "/studentdashboard"
-  : "/auth";
-               // If not logged in
-
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleDashboardClick = () => {
     if (!user) {
       toast({
-        title: "Failed to load dashboard",
-        description: "You must be logged in to view this page.",
-        status: "error",
-        duration: 4000,
+        title: "Access denied",
+        description: "You must be logged in to view the dashboard.",
+        status: "warning",
+        duration: 3000,
         isClosable: true
       });
       return;
     }
-    navigate(dashboardLink);
+    navigate("/studentdashboard");
+    onClose();
   };
 
   return (
-<Box bg="white" px={4} shadow="md" position="sticky" top={0} zIndex={50}>
-    <Flex h={16} alignItems="center" justifyContent="space-between">
-      {/* Logo + Text container */}
-      <Flex align="center" gap={2}>
-        <Image
-          src="/credimap_logo.png" // <-- path to your local image in /public
-          alt="Logo"
-          boxSize="150px"   // size of the image
-        />
-      </Flex>
+    <Box bg="white" px={4} shadow="md" position="sticky" top={0} zIndex={50}>
+      <Flex h={16} alignItems="center" justifyContent="space-between">
+        {/* Logo */}
+        <Image src="/credimap_logo.png" alt="Logo" boxSize="120px" />
 
-        <HStack spacing={4}>
-          <Link to="/">
-            <Button variant="ghost">Home</Button>
-          </Link>
-          <Link to="/orgmap">
-            <Button variant="ghost">Map</Button></Link>
-
-          {/* Dashboard always visible */}
-            <Button variant="ghost" onClick={handleDashboardClick}>Dashboard</Button>
+        {/* Desktop nav */}
+        <HStack spacing={4} display={{ base: "none", md: "flex" }}>
+          <Link to="/"><Button variant="ghost">Home</Button></Link>
+          <Link to="/orgmap"><Button variant="ghost">Map</Button></Link>
+          <Button variant="ghost" onClick={handleDashboardClick}>Dashboard</Button>
 
           {user ? (
-            <Button
-              colorScheme="red"
-              onClick={() => {
-                logout();
-                navigate("/auth");
-              }}
-            >
+            <Button colorScheme="red" onClick={() => { logout(); navigate("/auth"); }}>
               Logout
             </Button>
           ) : (
             <Link to="/auth">
-              <Button colorScheme="green">Sign Up / Sign In</Button>
+              <Button colorScheme="green">Sign In</Button>
             </Link>
           )}
         </HStack>
+
+        {/* Mobile hamburger */}
+        <IconButton
+          icon={<HamburgerIcon />}
+          display={{ base: "flex", md: "none" }}
+          onClick={onOpen}
+          variant="ghost"
+          aria-label="Open menu"
+        />
       </Flex>
+
+      {/* Mobile drawer */}
+      <Drawer placement="right" onClose={onClose} isOpen={isOpen}>
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerBody mt={10}>
+            <VStack align="stretch" spacing={0}>
+    {[
+      { label: "Home", path: "/" },
+      { label: "Map", path: "/orgmap" },
+    ].map((item) => (
+      <Box key={item.label}>
+        <Link to={item.path} onClick={onClose}>
+          <Box
+            py={3}
+            fontSize="lg"
+            fontWeight="medium"
+            _hover={{ color: "#E8B9AB" }}
+          >
+            {item.label}
+          </Box>
+        </Link>
+        <Box h="1px" bg="#E8B9AB" opacity={0.4} />
+      </Box>
+    ))}
+
+    {/* Dashboard */}
+    <Box>
+      <Box
+        py={3}
+        fontSize="lg"
+        fontWeight="medium"
+        cursor="pointer"
+        onClick={handleDashboardClick}
+        _hover={{ color: "#E8B9AB" }}
+      >
+        Dashboard
+      </Box>
+      <Box h="1px" bg="#E8B9AB" opacity={0.4} />
+    </Box>
+
+    {/* Auth action */}
+    {user ? (
+  <Box
+    py={3}
+    fontSize="lg"
+    fontWeight="medium"
+    cursor="pointer"
+    color="red.500"
+    onClick={() => {
+      logout();
+      navigate("/auth");
+      onClose();
+    }}
+  >
+    Logout
+  </Box>
+) : (
+  <Flex justify="center" mt={6}>
+    <Button
+      size="sm"
+      width="70%"
+      maxW="220px"
+      borderRadius="full"
+      bg="#E8B9AB"
+      color="white"
+      _hover={{ bg: "#d9a89b" }}
+      onClick={() => {
+        navigate("/auth");
+        onClose();
+      }}
+    >
+      Sign In
+    </Button>
+  </Flex>
+)}
+  </VStack>
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     </Box>
   );
 }
