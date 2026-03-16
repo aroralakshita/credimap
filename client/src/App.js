@@ -9,7 +9,7 @@ import Home from './pages/Home';
 import AuthPage from './pages/AuthPage';
 import StudentDashboard from './pages/StudentDashboard';
 import { useAuth } from "./context/AuthContext";
-
+import GoogleCallback from './components/GoogleCallback';
 
 
 function App() {
@@ -27,6 +27,7 @@ function App() {
         <Route path="/org/:orgId" element={<OrgProfile user={user} />} />
         <Route path="/auth" element={<AuthPage onLogin={login} />} />
         <Route path="/studentdashboard" element={<StudentDashboard />} />
+        <Route path="/auth/callback" element={<GoogleCallback />} />
       </Routes>
      </div>
     </Router>
