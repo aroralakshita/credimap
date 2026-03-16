@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const passport = require('passport');
 const path = require('path');
 
 const app = express();
@@ -11,11 +12,14 @@ app.use((req, res, next) => {
 
 
 app.use(cors({
-  origin: ['https://credimap-mu.vercel.app'],
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   credentials: true
 }));
 
 app.use(express.json());
+
+app.use(passport.initialize());
+
 
 // API Routes
 app.use('/api/auth', require('./routes/auth'));
