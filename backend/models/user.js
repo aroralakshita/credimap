@@ -13,7 +13,15 @@ const UserSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true
+    required: function() {
+      return !this.googleId;
+    }
+  },
+
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true
   },
 
   createdAt: {
@@ -24,6 +32,10 @@ const UserSchema = new mongoose.Schema({
 
 // Password comparison method
 UserSchema.methods.comparePassword = async function(candidatePassword) {
+  // If user logged in with Google, they don't have a password
+  if (this.googleId && !this.password) {
+    return false;
+  }
   const bcrypt = require('bcryptjs');
   return await bcrypt.compare(candidatePassword, this.password);
 };
