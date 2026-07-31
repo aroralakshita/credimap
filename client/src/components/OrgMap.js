@@ -8,6 +8,7 @@ import {
   ZoomableGroup,
 } from "react-simple-maps";
 import axios from "axios";
+import ColdStartNotice from "./ColdStartNotice";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
@@ -95,6 +96,7 @@ export default function OrgMap() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 to-sky-200">
+      <ColdStartNotice />
       {/* Header */}
       <header className="bg-white shadow-md p-3 md:p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-2 sticky top-0 z-30">
         <h1 className="text-lg md:text-xl font-bold" style={{ color: "#E8B9AB" }}>
