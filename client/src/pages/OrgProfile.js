@@ -5,7 +5,7 @@ import {
   Box, Flex, Heading, Text, VStack, HStack, Avatar,
   Stat, StatLabel, StatNumber, StatHelpText, Button } from '@chakra-ui/react';
 import { FaInstagram, FaLinkedin, FaLink, FaTiktok, FaGlobe } from 'react-icons/fa';
-import ColdStartNotice from "./ColdStartNotice";
+import ColdStartNotice from "components/ColdStartNotice";
 
 
 export default function OrgProfile({ user }) {
