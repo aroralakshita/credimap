@@ -5,6 +5,7 @@ import {
   Box, Flex, Heading, Text, VStack, HStack, Avatar,
   Stat, StatLabel, StatNumber, StatHelpText, Button } from '@chakra-ui/react';
 import { FaInstagram, FaLinkedin, FaLink, FaTiktok, FaGlobe } from 'react-icons/fa';
+import ColdStartNotice from "./ColdStartNotice";
 
 
 export default function OrgProfile({ user }) {
@@ -92,6 +93,7 @@ const showBackButton =
       p={8}
       fontFamily="Ubuntu, sans-serif"
     >
+      <ColdStartNotice />
 
       {/* Header */}
       <Flex justify="space-between" align="center" mb={6}>
