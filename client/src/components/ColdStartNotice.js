@@ -17,7 +17,7 @@ export default function ColdStartNotice({ autoHideMs = 20000 }) {
     <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-1.5rem)] max-w-md">
       <div className="bg-[#E8B9AB] text-white text-sm rounded-xl shadow-lg px-4 py-3 flex items-center justify-between gap-3">
         <span>
-          👋 Just give it ~30 seconds — our server's waking up from a nap.
+          Just give it ~30 seconds — our server's waking up from a nap.
         </span>
         <button
           onClick={() => setVisible(false)}

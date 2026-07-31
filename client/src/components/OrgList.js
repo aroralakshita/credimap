@@ -43,7 +43,7 @@ export default function OrgList() {
       <div className="max-w-3xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl md:text-2xl font-bold" style={{ color: "#E8B9AB" }}>
-            🗂️ Browse Organizations
+            Browse Organizations
           </h1>
           <button
             onClick={toggleSort}
