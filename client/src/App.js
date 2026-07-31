@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 
 import OrgMap from './components/OrgMap';
+import OrgList from "./components/OrgList";
 import Navbar from './components/Navbar';
 import OrgProfile from './pages/OrgProfile';
 import Home from './pages/Home';
@@ -10,6 +11,7 @@ import AuthPage from './pages/AuthPage';
 import StudentDashboard from './pages/StudentDashboard';
 import { useAuth } from "./context/AuthContext";
 import GoogleCallback from './components/GoogleCallback';
+
 
 
 function App() {
@@ -24,6 +26,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/orgmap" element={<OrgMap />} />
+        <Route path="/orglist" element={<OrgList />} />
         <Route path="/org/:orgId" element={<OrgProfile user={user} />} />
         <Route path="/auth" element={<AuthPage onLogin={login} />} />
         <Route path="/studentdashboard" element={<StudentDashboard />} />
