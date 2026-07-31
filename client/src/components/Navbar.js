@@ -50,6 +50,7 @@ export default function Navbar() {
         <HStack spacing={4} display={{ base: "none", md: "flex" }}>
           <Link to="/"><Button variant="ghost">Home</Button></Link>
           <Link to="/orgmap"><Button variant="ghost">Map</Button></Link>
+          <Link to="/orglist"><Button variant="ghost">Organizations</Button></Link>
           <Button variant="ghost" onClick={handleDashboardClick}>Dashboard</Button>
 
           {user ? (
@@ -83,6 +84,7 @@ export default function Navbar() {
     {[
       { label: "Home", path: "/" },
       { label: "Map", path: "/orgmap" },
+      { label: "Organizations", path: "/orglist" },
     ].map((item) => (
       <Box key={item.label}>
         <Link to={item.path} onClick={onClose}>
