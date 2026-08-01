@@ -187,7 +187,7 @@ const showBackButton =
       <Flex gap={6} mb={10} wrap="wrap">
         {[
           { label: "Avg Rating", value: `${average} ⭐`, help: `Based on ${reviews.length} reviews` },
-          { label: "Description", help: org.location?.description },
+          { label: "Description", help: org.description },
           { label: "Category", value: org.category || "N/A", help: org.format || "" },
         ].map((stat, i) => (
           <Box
