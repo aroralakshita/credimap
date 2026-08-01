@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import {
   Box, FormControl, FormLabel, Input, Button, VStack, useToast, Divider, Text
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 
@@ -11,6 +11,7 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const toast = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
 
@@ -36,7 +37,7 @@ const res = await axios.post(`${API_BASE}/api/auth/login`, { email, password }, 
         isClosable: true,
       });
 
-      navigate("/");
+      navigate(location.state?.from || "/");
 
     } catch (err) {
       toast({
