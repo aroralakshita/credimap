@@ -20,6 +20,8 @@ export default function OrgProfile({ user }) {
   const [average, setAverage] = useState(0);
   const navigate = useNavigate();
 
+  const draftKey = `credimap_review_draft_${orgId}`;
+
 // Show "Back to Dashboard" ONLY if:
 // 1️⃣ User is logged in
 // 2️⃣ User is an organization
@@ -55,6 +57,20 @@ const showBackButton =
     fetchData();
   }, [orgId, refresh]);
 
+  useEffect(() => {
+    const saved = localStorage.getItem(draftKey);
+    if (saved) {
+      try {
+        const { rating: savedRating, comment: savedComment } = JSON.parse(saved);
+        if (savedRating) setRating(savedRating);
+        if (savedComment) setComment(savedComment);
+      } catch (err) {
+        console.error("Failed to restore review draft:", err);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orgId]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
@@ -72,6 +88,9 @@ const showBackButton =
       setRating(0);
       setComment('');
       setRefresh(prev => !prev);
+      localStorage.removeItem(draftKey);
+      setRefresh(prev => !prev);
+
 } catch (err) {
   if (err.response) {
     console.error("Backend error:", err.response.data);
@@ -196,8 +215,6 @@ const showBackButton =
 <Box flex="2" minW="200px" bg="white" p={6} rounded="2xl" shadow="md" _hover={{ shadow: "lg" }}>
   <Heading size="md" mb={4}>Reviews</Heading>
 
-{/* ✅ Review form (only if user is logged in and not an org owner) */}
-{user?.role === "student" && (
   <Box mb={6} p={4} bg="gray.50" rounded="lg" shadow="sm">
     <Heading size="sm" mb={2}>Leave a Review</Heading>
     <form onSubmit={handleSubmit}>
@@ -237,16 +254,21 @@ const showBackButton =
 
       {/* Submit */}
       <Button
-        type="submit"
+        type={user ? "submit" : "button"}
         mt={3}
-        colorScheme="blue"
+        colorScheme={user ? "blue" : "orange"}
         isDisabled={!rating || !comment.trim()}
+        onClick={() => {
+          if (!user) {
+            localStorage.setItem(draftKey, JSON.stringify({ rating, comment }));
+            navigate("/auth", { state: { from: `/org/${orgId}` } });
+          }
+        }}
       >
-        Submit Review
+        {user ? "Submit Review" : "Sign In to Submit"}
       </Button>
     </form>
   </Box>
-)}
 
   {/* Existing review list */}
   {reviews.length === 0 ? (
