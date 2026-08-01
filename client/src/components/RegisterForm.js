@@ -3,13 +3,14 @@ import {
   Box, FormControl, FormLabel, Input, Button, VStack, 
   useToast, Divider, Text
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 
 function RegisterForm() {
   const toast = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -67,7 +68,7 @@ const payload = {
         isClosable: true,
       });
 
-      navigate("/");
+      navigate(location.state?.from || "/");
 
     } catch (err) {
       console.error("Registration error:", err);
