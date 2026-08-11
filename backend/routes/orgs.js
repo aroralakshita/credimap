@@ -3,18 +3,27 @@ const axios = require('axios');
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/authenticateToken.js');
+const optionalAuth = require('../middleware/optionalAuth.js');
 const Org = require('../models/orgs.js');
 
 async function geocodeLocation(city, state, country) {
-  // Build location string from whatever is available
-  const parts = [];
-  if (city) parts.push(city);
-  if (state) parts.push(state);
-  if (country) parts.push(country);
+  if (!city && !state && !country) return null;
   
-  if (parts.length === 0) return null;
+  const params = {
+    format: 'json',
+    limit: 1,
+    addressdetails: 1
+  };
+
+  if (city) params.city = city;
+  if (state) params.state = state;
+  if (country) params.country = country;
   
-  const locationString = parts.join(", ");
+  if (country && !city && !state) {
+    params.featuretype = 'country';
+  }
+  
+  const locationString = [city, state, country].filter(Boolean).join(", ");
   
   try {
     console.log(`  Attempting to geocode: "${locationString}"`);
@@ -22,12 +31,7 @@ async function geocodeLocation(city, state, country) {
     const response = await axios.get(
       `https://nominatim.openstreetmap.org/search`,
       {
-        params: {
-          format: 'json',
-          q: locationString,
-          limit: 1,
-          addressdetails: 1
-        },
+        params,
         headers: {
           'User-Agent': 'CrediMap Organization Mapper'
         },
@@ -36,17 +40,22 @@ async function geocodeLocation(city, state, country) {
     );
 
     if (response.data && response.data.length > 0) {
+      const result = response.data[0];
       const coords = [
-        parseFloat(response.data[0].lon),
-        parseFloat(response.data[0].lat)
+        parseFloat(result.lon),
+        parseFloat(result.lat)
       ];
-      console.log(`  ✅ Geocoded successfully: [${coords[0]}, ${coords[1]}]`);
-      return coords;
+
+      const countryCode = result.address?.country_code
+        ? result.address.country_code.toUpperCase()
+        : null;
+      console.log(`  Geocoded successfully: [${coords[0]}, ${coords[1]}] (${countryCode})`);
+      return { coordinates: coords, countryCode };
     } else {
-      console.log(`  ❌ No results found for: "${locationString}"`);
+      console.log(`  No results found for: "${locationString}"`);
     }
   } catch (err) {
-    console.error(`  ❌ Geocoding error for "${locationString}":`, err.message);
+    console.error(`  Geocoding error for "${locationString}":`, err.message);
   }
 
   return null;
@@ -64,14 +73,15 @@ router.post('/:id/geocode', async (req, res) => {
       return res.status(400).json({ message: 'Organization has no location data' });
     }
 
-    const coordinates = await geocodeLocation(
+    const geoResult = await geocodeLocation(
       org.location.city,
       org.location.state,
       org.location.country
     );
 
-    if (coordinates) {
-      org.location.coordinates = coordinates;
+    if (geoResult) {
+      org.location.coordinates = geoResult.coordinates;
+      org.location.countryCode = geoResult.countryCode;
       await org.save();
       
       res.json({ 
@@ -93,16 +103,19 @@ router.post('/geocode-all', async (req, res) => {
   try {
     // Find orgs that need geocoding
     const orgs = await Org.find({
-      $or: [
-        { 'location.coordinates': { $exists: false } },
-        { 'location.coordinates': null },
-        { 'location.coordinates': [] },
-        { 'location.coordinates': { $size: 0 } }
-      ],
-      $or: [
-        { 'location.city': { $exists: true, $ne: '' } },
-        { 'location.state': { $exists: true, $ne: '' } },
-        { 'location.country': { $exists: true, $ne: '' } }
+      $and: [
+        { $or: [
+          { 'location.coordinates': { $exists: false } },
+          { 'location.coordinates': null },
+          { 'location.coordinates': [] },
+          { 'location.coordinates': { $size: 0 } }
+
+        ]},
+        { $or: [
+          { 'location.city': { $exists: true, $ne: '' } },
+          { 'location.state': { $exists: true, $ne: '' } },
+          { 'location.country': { $exists: true, $ne: '' } }
+        ]}
       ]
     });
 
@@ -119,20 +132,22 @@ router.post('/geocode-all', async (req, res) => {
       try {
         console.log(`\nProcessing: ${org.name}`);
         
-        const coordinates = await geocodeLocation(
+        const geoResult = await geocodeLocation(
           org.location?.city,
           org.location?.state,
           org.location?.country
         );
 
-        if (coordinates) {
-          org.location.coordinates = coordinates;
+        if (geoResult) {
+          org.location.coordinates = geoResult.coordinates;
+          org.location.countryCode = geoResult.countryCode;
           await org.save();
           results.success++;
           results.details.push({
             name: org.name,
             location: [org.location?.city, org.location?.state, org.location?.country].filter(Boolean).join(", "),
-            coordinates,
+            coordinates: geoResult.coordinates,
+            countryCode: geoResult.countryCode,
             status: 'success'
           });
         } else {
@@ -169,7 +184,7 @@ router.post('/geocode-all', async (req, res) => {
   }
 });
 
-router.post('/submit', auth, async (req, res) => {
+router.post('/submit', optionalAuth, async (req, res) => {
   try {
     const { name, category, format, description, instagram, linktree, tiktok, linkedin, website, location, submitterName } = req.body;
 
@@ -184,11 +199,11 @@ router.post('/submit', auth, async (req, res) => {
       });
     }
 
-    let coordinates = null;
+    let geoResult = null;
     if (location?.city || location?.state || location?.country) {
       console.log('Geocoding location:', location);
-      coordinates = await geocodeLocation(location.city, location.state, location.country);
-      console.log('Result coordinates:', coordinates);
+      geoResult = await geocodeLocation(location.city, location.state, location.country);
+      console.log('Result:', geoResult);
     }
 
     // Create new org
@@ -206,17 +221,18 @@ router.post('/submit', auth, async (req, res) => {
         city: location?.city,
         state: location?.state,
         country: location?.country,
-        coordinates: coordinates
+        coordinates: geoResult?.coordinates || null,
+        countryCode: geoResult?.countryCode || null,
       },
       submittedBy: {
         name: submitterName,
-        userId: req.user.id 
+        userId: req.user?.id || null
       },
       status: 'pending'
     });
 
     await org.save();
-    console.log('✅ Org saved:', org._id, 'with coordinates:', coordinates);
+    console.log('✅ Org saved:', org._id, 'with coordinates:', geoResult?.coordinates);
 
     res.status(201).json({ 
       message: 'Organization submitted successfully!',
