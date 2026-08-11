@@ -2,12 +2,25 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ColdStartNotice from "./ColdStartNotice";
+import { getContinent, CONTINENT_OPTIONS } from "../utils/continents";
+
+const categoryOptions = [
+  'Astronomy','Arts','Biology','Business','Chemistry','Computer science','Community service', 'Cybersecurity', 'Data science',
+  'Education','Engineering','Environmental science','History','Law','Literature',
+  'Mathematics','Medicine','Neuroscience','Philosophy','Physics','Political science',
+  'Psychology','Social work','Sociology','STEM','Technology'
+].sort();
 
 export default function OrgList() {
   const navigate = useNavigate();
   const [organizations, setOrganizations] = useState([]);
   const [sortDirection, setSortDirection] = useState("asc"); // "asc" = A-Z, "desc" = Z-A
   const [loading, setLoading] = useState(true);
+
+  const [selectedFormat, setSelectedFormat] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedContinent, setSelectedContinent] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     const fetchOrgs = async () => {
@@ -24,7 +37,15 @@ export default function OrgList() {
     fetchOrgs();
   }, []);
 
-  const sortedOrgs = [...organizations].sort((a, b) => {
+  const filteredOrgs = organizations.filter((org) => {
+    const formatMatch = !selectedFormat || org.format?.toLowerCase() === selectedFormat.toLowerCase();
+    const categoryMatch = !selectedCategory || org.category?.toLowerCase() === selectedCategory.toLowerCase();
+    const continentMatch =
+      !selectedContinent || getContinent(org.location?.countryCode) === selectedContinent;
+    return formatMatch && categoryMatch && continentMatch;
+  });
+
+  const sortedOrgs = [...filteredOrgs].sort((a, b) => {
     const nameA = (a.name || "").toLowerCase();
     const nameB = (b.name || "").toLowerCase();
     if (nameA < nameB) return sortDirection === "asc" ? -1 : 1;
@@ -45,12 +66,56 @@ export default function OrgList() {
           <h1 className="text-xl md:text-2xl font-bold" style={{ color: "#E8B9AB" }}>
             Browse Organizations
           </h1>
+          <div className="flex gap-2">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="md:hidden bg-blue-500 text-white px-3 py-2 rounded-lg text-sm"
+            >
+              {showFilters ? "Hide Filters" : "Filters"}
+          </button>
           <button
             onClick={toggleSort}
             className="bg-white shadow-md border px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition"
           >
             Sort: {sortDirection === "asc" ? "A → Z" : "Z → A"}
           </button>
+        </div>
+      </div>
+
+      {/* Filters */}
+        <div className={`${showFilters ? "flex" : "hidden"} md:flex flex-col md:flex-row gap-2 mb-6 bg-white/95 shadow-md rounded-xl p-3`}>
+          <select
+            className="border px-2 md:px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm w-full md:w-auto"
+            value={selectedFormat}
+            onChange={(e) => setSelectedFormat(e.target.value)}
+          >
+            <option value="">All Formats</option>
+            <option value="remote">Remote</option>
+            <option value="in-person">In-Person</option>
+            <option value="hybrid">Hybrid</option>
+          </select>
+
+          <select
+            className="border px-2 md:px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm w-full md:w-auto"
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+          >
+            <option value="">All Categories</option>
+            {categoryOptions.map((cat) => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
+
+          <select
+            className="border px-2 md:px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm w-full md:w-auto"
+            value={selectedContinent}
+            onChange={(e) => setSelectedContinent(e.target.value)}
+          >
+            <option value="">All Continents</option>
+            {CONTINENT_OPTIONS.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
         </div>
 
         {loading ? (
