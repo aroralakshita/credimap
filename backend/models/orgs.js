@@ -10,7 +10,7 @@ const OrgSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: ['Astronomy','Arts','Biology','Business','Chemistry','Computer science','Community service','Data science',
+    enum: ['Astronomy','Arts','Biology','Business','Chemistry','Computer science','Community service', 'Cybersecurity', 'Data science',
     'Education','Engineering','Environmental science','History','Law','Literature',
     'Mathematics','Medicine','Neuroscience','Philosophy','Physics','Political science',
     'Psychology','Social work','Sociology','STEM','Technology']
@@ -31,6 +31,7 @@ const OrgSchema = new mongoose.Schema({
     city: String,
     state: String,
     country: String,
+    countryCode: String,
     coordinates: [Number]
   },
 
@@ -42,13 +43,11 @@ const OrgSchema = new mongoose.Schema({
 
   // Submission info (who submitted this org)
   submittedBy: {
-    name: {
-      type: String,
-      userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-      }
-    },
+    name: { type: String },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+       ref: 'User'
+    }
   },
 
   // Reviews and ratings
