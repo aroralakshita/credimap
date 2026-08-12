@@ -25,7 +25,7 @@ export default function OrgMap() {
   const [selectedCity, setSelectedCity] = useState("");
 
   const categoryOptions = [
-    'Astronomy','Arts','Biology','Business','Chemistry','Computer science','Community service','Data science',
+    'Astronomy','Arts','Biology','Business','Chemistry','Computer science','Community service', 'Cybersecurity', 'Data science',
     'Education','Engineering','Environmental science','History','Law','Literature',
     'Mathematics','Medicine','Neuroscience','Philosophy','Physics','Political science',
     'Psychology','Social work','Sociology','STEM','Technology'
