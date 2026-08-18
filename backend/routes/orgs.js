@@ -10,6 +10,7 @@ async function geocodeLocation(city, state, country) {
   if (!city && !state && !country) return null;
   
   const params = {
+    key: process.env.LOCATIONIQ_KEY,
     format: 'json',
     limit: 1,
     addressdetails: 1
@@ -19,22 +20,15 @@ async function geocodeLocation(city, state, country) {
   if (state) params.state = state;
   if (country) params.country = country;
   
-  if (country && !city && !state) {
-    params.featuretype = 'country';
-  }
-  
   const locationString = [city, state, country].filter(Boolean).join(", ");
   
   try {
     console.log(`  Attempting to geocode: "${locationString}"`);
     
     const response = await axios.get(
-      `https://nominatim.openstreetmap.org/search`,
+      `https://us1.locationiq.com/v1/search`,
       {
         params,
-        headers: {
-          'User-Agent': 'CrediMap Organization Mapper'
-        },
         timeout: 5000
       }
     );
@@ -55,10 +49,32 @@ async function geocodeLocation(city, state, country) {
       console.log(`  No results found for: "${locationString}"`);
     }
   } catch (err) {
-    console.error(`  Geocoding error for "${locationString}":`, err.message);
-  }
-
-  return null;
+    if (err.response?.status === 429) {
+      console.warn(`  Rate limited, retrying once after 1s: "${locationString}"`);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      try {
+        const retryResponse = await axios.get(
+          `https://us1.locationiq.com/v1/search`,
+          { params, timeout: 5000 }
+        );
+        if (retryResponse.data && retryResponse.data.length > 0) {
+           const result = retryResponse.data[0];
+           return {
+             coordinates: [parseFloat(result.lon), parseFloat(result.lat)],
+             countryCode: result.address?.country_code
+               ? result.address.country_code.toUpperCase()
+               : null
+            };
+          }
+        } catch (retryErr) {
+          console.error(`  Retry also failed for "${locationString}":`, retryErr.message);
+        }
+      } else {
+          console.error(`  Geocoding error for "${locationString}":`, err.message);
+      }
+    }
+    
+    return null;
 }
 
 router.post('/:id/geocode', async (req, res) => {
