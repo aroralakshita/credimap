@@ -87,19 +87,18 @@ const showBackButton =
 
       setRating(0);
       setComment('');
-      setRefresh(prev => !prev);
       localStorage.removeItem(draftKey);
       setRefresh(prev => !prev);
 
-} catch (err) {
-  if (err.response) {
-    console.error("Backend error:", err.response.data);
-    alert(`Failed: ${err.response.data.message || "Server error"}`);
-  } else {
-    console.error(err);
-    alert("Network error submitting review.");
-  }
-}
+    } catch (err) {
+      if (err.response) {
+        console.error("Backend error:", err.response.data);
+        alert(`Failed: ${err.response.data.message || "Server error"}`);
+      } else {
+        console.error(err);
+        alert("Network error submitting review.");
+      }
+    }
   };
 
   return (
